@@ -1,0 +1,35 @@
+public class XeninVSC.MigrationManager
+    public constructor(conn = XeninVSC:GetDatabaseConnection())
+        self.conn = conn
+        self.running = false
+    end
+
+    public setMigrationsDirectory(dir)
+        self.dir = dir
+
+        return self
+    end
+
+    public setAddonId(id)
+        self.addonId = id
+        
+        return self
+    end
+
+    public async run()
+        if (self.running) then throw "Already running" end
+        self.running = true
+        local files, folders = file.Find(self.dir)
+        for i, v in ipairs(files) do
+            print(i, v)
+        end
+    
+
+    end
+
+    private async isRunning()
+
+    end
+
+end
+

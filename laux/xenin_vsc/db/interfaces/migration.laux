@@ -1,0 +1,11 @@
+public class XeninVSC.Migration
+    _get _set name
+
+    up()
+        return XeninUI.Promises.new():reject(`${self.name}::up migration is unimplemented`)
+    end
+    
+    down()
+        return XeninUI.Promises.new():reject(`${self.name}::down migration is unimplemented`)
+    end
+end

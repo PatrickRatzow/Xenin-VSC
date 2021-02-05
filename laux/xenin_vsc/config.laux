@@ -1,0 +1,10 @@
+XeninVSC.Config = {
+    DB = {
+        type = "MySQL",
+        ip = "localhost",
+        username = "root",
+        password = "root",
+        database = "xenin_vsc",
+        port = 3306
+    }
+}

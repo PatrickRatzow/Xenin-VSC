@@ -1,4 +1,4 @@
-class Migration
+class Migration extends XeninVSC.Migration
     public async up(trx)
         local container = await trx:query([[
             CREATE TABLE IF NOT EXISTS xenin_vsc_container (

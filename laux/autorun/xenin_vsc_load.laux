@@ -1,3 +1,35 @@
 XeninVSC = {}
+XeninVSC.MySQL = {}
+XeninVSC.SQLite = {}
 
--- TODO: Add
+local function Load()
+    hook.Run("XeninVSC.PreLoad")
+
+    XeninUI.Loader()
+        :setName("Xenin Virtual Storage Containers")
+        :setAcronym("XeninVSC")
+        :setDirectory("xenin_vsc")
+        :setColor(XeninUI.Theme.Purple)
+        :loadFile("config", XENINUI_SHARED)
+        :load("util", XENINUI_SHARED, true)
+        :load("db/interfaces", XENINUI_SERVER, true)
+        :load("db/providers", XENINUI_SERVER, true)
+        :load("db/migrations", XENINUI_SERVER, true)
+    :done()
+
+    hook.Run("XeninVSC.Loaded")
+    hook.Run("XeninVSC.PostLoad")
+
+    XeninVSC:ConnectToDatabase()
+        :next(() =>
+            hook.Run("XeninVSC.DatabaseConnected")
+        end, (err) =>
+            hook.Run("XeninVSC.DatabaseConnected", err)
+        end)
+end
+
+if (XeninUI) then
+    Load()
+else
+    hook.Add("XeninUI.Loaded", "XeninVSC", Load)
+end

@@ -1,0 +1,38 @@
+public class XeninVSC.MySQL.Connection
+    public constructor(options)
+        require("mysqloo")
+
+        self.db = mysqloo.connect(options.ip, options.username, options.password, options.database, options.port ?? 3306)
+    end
+
+    public connect()
+        local p = XeninUI.Promises.new()
+
+        self.db.onConnected = (db) =>
+            p:resolve(self)
+        end
+        self.db.onConnectionFailed = (db, err) =>
+            p:reject({ connection = self, err = err })
+        end
+
+        self.db:connect()
+        
+        return p
+    end
+
+    public escape(value)
+        return self.db:escape(value)
+    end
+
+    public prepare(query)
+        return XeninVSC.MySQL.PreparedQuery(conn, query)
+    end
+
+    public query(query)
+        return XeninVSC.MySQL.Query(conn, query)
+    end
+
+    public transaction(conn)
+        return XeninVSC.MySQL.Transaction(conn)
+    end
+end

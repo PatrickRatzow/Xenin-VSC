@@ -1,13 +1,13 @@
 XeninVSC.Repositories = {}
 
 function XeninVSC:CreateRepository(name)
-    local cfg = "MySQL"
-    local repo = XeninVSC[cfg][name .. "Repository"]
+    local type = self:GetDatabaseConfig().type
+    local repo = XeninVSC[type][name .. "Repository"]
     XeninVSC.Repositories[name] = repo
 end
 
 function XeninVSC:GetRepository(id)
-    return XeninVSC.Repositories[id]()
+    return XeninVSC.Repositories[id](XeninVSC:GetDatabaseConnection())
 end
 
 XeninVSC:CreateRepository("User")

@@ -1,0 +1,11 @@
+public class XeninVSC.QueryResult
+    _get lastInsert
+    _get data
+    _get affectedRows
+
+    public constructor(result = {})
+        self.lastInsert = result.lastInsert
+        self.data = result.data
+        self.affectedRows = result.affectedRows
+    end
+end

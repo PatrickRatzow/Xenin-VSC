@@ -1,0 +1,20 @@
+XeninVSC.Connections ||= {}
+
+async function XeninVSC:ConnectToDatabase(id = "default", options = self:GetDatabaseConfig())
+    if (options.type == "MySQL") then
+        self.Connections[id] = XeninVSC.MySQL.Connection(options)
+    else
+        self.Connections[id] = XeninVSC.SQLite.Connection(options)
+    end
+
+    local connectionResponse = await self.Connections[id]:connect()
+    return self.Connections[id]
+end
+
+function XeninVSC:GetDatabaseConfig()
+    return self.Config.DB
+end
+
+function XeninVSC:GetDatabaseConnection(id = "default")
+    return self.Connections[id]
+end
