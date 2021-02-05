@@ -1,0 +1,11 @@
+function XeninVSC:Map(data, func)
+    local tbl = {}
+    for i, v of data do
+        local output = func(v, i)
+        if (output) then
+            table.insertt(tbl, output)
+        end
+    end
+
+    return tbl
+end

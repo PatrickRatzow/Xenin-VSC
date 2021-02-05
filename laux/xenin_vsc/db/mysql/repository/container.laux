@@ -1,0 +1,14 @@
+public class XeninVSC.MySQL.ContainerRepository extends XeninVSC.Repository
+    public setup()
+        self:addDAO(XeninVSC.MySQL.ContainerDAO)
+    end
+
+    public getContainer(id)
+        return self.containerDAO:getContainer(id)
+    end
+
+    public insertContainer(id)
+        return self.containerDAO:insertContainer(id)
+    end
+end
+

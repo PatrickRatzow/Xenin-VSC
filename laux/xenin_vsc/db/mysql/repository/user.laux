@@ -1,0 +1,29 @@
+public class XeninVSC.MySQL.PlayerRepository extends XeninVSC.Repository
+    public setup()
+        self:addDAO(
+            XeninVSC.MySQL.PlayerDAO, 
+            XeninVSC.MySQL.ContainerDAO,
+            XeninVSC.MySQL.ItemDAO
+        )
+    end
+
+    public async getStorageContainer(playerId, containerId)
+        local container = await self.containerDAO:getContainer(containerId)
+        if (!container) then return { err = "No such container is registered" } end
+        local items = await self.itemDAO:getItemsByPlayerId(playerId, container.id)
+
+        return items ?? {}
+    end
+
+    public async getStorageContainers(playerId)
+        local containersList = await self.containerDAO:getContainers()
+        local containers = {}
+        for i, v in ipairs(containersList) do
+            table.insert(containers, self:getStorageContainer(playerId, v.type_id))
+        end
+        containers = await XeninUI.Promises.all(containers)
+
+        return containers
+    end
+end
+

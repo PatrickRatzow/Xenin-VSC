@@ -1,0 +1,14 @@
+XeninVSC.Repositories = {}
+
+function XeninVSC:CreateRepository(name)
+    local cfg = "MySQL"
+    local repo = XeninVSC[cfg][name .. "Repository"]
+    XeninVSC.Repositories[name] = repo
+end
+
+function XeninVSC:GetRepository(id)
+    return XeninVSC.Repositories[id]()
+end
+
+XeninVSC:CreateRepository("User")
+XeninVSC:CreateRepository("Container")

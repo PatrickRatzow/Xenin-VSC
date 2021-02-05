@@ -1,0 +1,35 @@
+public class XeninVSC.Repository
+    public constructor(conn)
+        self.conn = conn
+    end
+
+    public addDAO(...)
+        local daos = { ... }
+
+        for i, v in ipairs(daos) do
+            local split = v.__name:Split(".")
+            local lastPart = split[#split]
+            local name = lastPart:sub(1, 1):lower() .. lastPart:sub(2)
+
+            self:buildDAO(name, dao)
+        end
+    end
+
+    -- For override
+    public setup() end
+
+    private buildDAO(name, dao)
+        local inst = dao()
+        if (inst.beforeBuild) then
+            inst:beforeBuild(self.conn, self)
+        end
+        inst.__conn = self.conn
+        inst.__repo = self
+        if (inst.afterBuild()) then
+            inst:afterBuild(dao.__conn, dao.__repo)
+        end
+
+        self[name] = inst
+    end
+end
+

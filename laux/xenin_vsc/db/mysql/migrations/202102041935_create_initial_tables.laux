@@ -1,0 +1,57 @@
+class Migration
+    public async up(trx)
+        local container = await trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_container (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                type_id VARCHAR(16) NOT NULL
+            )
+        ]])
+        local item = await trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_item (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+            );
+        ]])
+        local itemAttribute = await trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_item_attribute (
+                item_id INT,
+                attribute VARCHAR(64),
+                value TEXT NOT NULL,
+
+                PRIMARY KEY (item_id, attribute),
+                FOREIGN KEY (item_id) REFERENCES xenin_vsc_item (id)
+            );
+        ]])
+        local containerItem = await trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_container_item (
+                item_id INT,
+                container_id INT,
+                slot INT UNSIGNED NOT NULL,
+                sort_order INT UNSIGNED,
+
+                PRIMARY KEY (item_id, container_id),
+                FOREIGN KEY (item_id) REFERENCES xenin_vsc_item (id),
+                FOREIGN KEY (container_id) REFERENCES xenin_vsc_container (id)
+            );
+        ]])
+        local conttainerItemPlayer = await trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_container_item_player (
+                item_id INT,
+                container_id INT,
+                player_id CHAR(21),
+
+                PRIMARY KEY (item_id, container_id, player_id),
+                FOREIGN KEY (item_id) REFERENCES xenin_vsc_item (id),
+                FOREIGN KEY (container_id) REFERENCES xenin_vsc_container (id),
+                FOREIGN KEY (player_id) REFERENCES xenin_framework_players (id)
+            )
+        ]])
+    end
+
+    public async down(trx)
+
+    end
+end
+
+return Migration

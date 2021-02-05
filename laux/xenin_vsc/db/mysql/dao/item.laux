@@ -1,0 +1,52 @@
+public class XeninVSC.MySQL.ItemDAO
+    private async getAttributesForItems(itemIds)
+        local parameters = {}
+        for i = 1, #itemIds do
+            parameters[#parameters + 1] = "?";
+        end
+        local attributes = self.conn:prepare([[
+            SELECT ia.*
+            FROM xenin_vsc_item_attribute ia
+            INNER JOIN xenin_vsc_item i ON ia.item_id = i.id
+            WHERE i.id IN (]] .. table.concat(parameters, ", ") .. [[)
+        ]])
+        for i, v in ipairs(itemIds) do
+            attributes:setInt(i, v)
+        end
+        attributes = await attributes:start()
+
+        local tbl = {}
+        for i, v in ipairs(attributes) do
+            local id = tonumber(v.item_id)
+            tbl[id] ||= {}
+            local index = tonumber(v.attribute) ?? v.attribute
+            local value = tonumber(v.value) ?? v.value
+            tbl[id][index] = value
+        end
+
+        return tbl
+    end
+    
+    public async getItemsByPlayerId(playerId, containerId)
+        local items = await self.conn:prepare([[
+            SELECT i.*
+            FROM xenin_vsc_item i
+            INNER JOIN xenin_vsc_container_item_player ip ON i.id = ip.item_id
+            WHERE ip.player_id = ?
+              AND ip.container_id = (SELECT id FROM xenin_vsc_container WHERE type_id = ?)
+        ]]):setString(1, playerId)
+            :setString(2, containerId)
+            :start()
+
+        local attributes = await self:getAttributesForItems(
+            XeninVSC:Map(items ?? {}, (i) => return i.id end)
+        )
+
+        for i, v in ipairs(items) do
+            local id = tonumber(v.id)
+            v.attributes = attributes[id] ?? {}
+        end
+
+        return items
+    end
+end
