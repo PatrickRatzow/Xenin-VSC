@@ -1,32 +1,31 @@
-public class XeninVSC.MySQL.PreparedQuery
+public class XeninVSC.SQLite.PreparedQuery
     public constructor(conn, query)
         self.conn = conn
-        self.rawQuery = query
-        self.query = self.conn:prepare(query)
+        self.query = query
     end
 
-    public getRaw()
-        return self.query
-    end
+    public replace(tbl)
+        for i, v of tbl do
+            self.query = self.query:Replace(`:${i}:`, self.conn:escape(v))
+        end
 
-    public setString(id, value)
-        self.query:setString(id, value)
+        return self
     end
 
     public start()
         local p = XeninUI.Promises.new()
 
-        self.query.onSuccess = (q, data) =>
+        local query = self.conn:query(self.query)
+        query.onSuccess = (q, data) =>
             p:resolve(XeninVSC.QueryResult({
                 data = data,
                 lastInsert = q:lastInsert(),
                 affectedRows = q:affectedRows()
             }))
         end
-        self.query.onError = (q, err) =>
+        query.onError = (q, err) =>
             p:reject(err)
         end
-        self.query:start()
 
         return p
     end

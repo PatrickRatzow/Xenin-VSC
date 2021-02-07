@@ -1,0 +1,20 @@
+public class XeninVSC.SQLite.ContainerDAO
+    async getContainer(id)
+        local container = await self.conn:prepare([[
+            SELECT *
+            FROM xenin_vsc_container
+            WHERE type_id = ?
+        ]]):setString(1, id)
+            :start()
+
+        return container?[1]
+    end
+
+    async insertContainer(id)
+        local insert = await self.conn:prepare([[
+            INSERT INTO xenin_vsc_container (type_id)
+            VALUES (?)
+        ]]):setString(1, id)
+            :start()
+    end
+end

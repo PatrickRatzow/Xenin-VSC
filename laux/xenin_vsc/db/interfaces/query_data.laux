@@ -1,0 +1,16 @@
+public class XeninVSC.QueryData
+    private data = data
+    public constructor(data = {}) end
+
+    public getRow(id)
+        return self.data[id]
+    end
+
+    public getData()
+        return self.data
+    end
+
+    public isEmpty()
+        return #self:getData() == 0
+    end
+end

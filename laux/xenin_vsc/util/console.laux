@@ -1,0 +1,43 @@
+class Console
+    commands = {}
+
+    public constructor()
+        concommand.Add("xeninvsc", (ply, cmd, args) =>
+            local cmd
+            for _, v in ipairs(self.commands) do
+                local commandArgs = v.args
+                for i, arg in ipairs(args) do
+                    if (arg != commandArgs[i]) then
+                        break
+                    end
+                    
+                    if (i == #args and i == #commandArgs) then
+                        cmd = v
+                    end
+                end
+
+                if (cmd) then
+                    break
+                end
+            end
+
+            if (cmd) then
+                cmd.func(ply, cmd, args)
+            end
+        end, () =>
+
+        end)
+    end
+
+    public addCommand(command, func, autoComplete)
+        local args = isstring(command) and { command } or command
+
+        table.insert(self.commands, {
+            args = args,
+            func = func,
+            autoComplete = autoComplete
+        })
+    end
+end
+
+XeninVSC.Console = Console()

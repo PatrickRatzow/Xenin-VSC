@@ -12,20 +12,25 @@ public class XeninVSC.MySQL.Query
         return self
     end
 
+    public getRaw()
+        return self.conn:query(self.query)
+    end
+
     public start()
         local p = XeninUI.Promises.new()
 
         local query = self.conn:query(self.query)
-        query.onSuccess = (q, data) =>
+        function query:onSuccess(data)
             p:resolve(XeninVSC.QueryResult({
                 data = data,
-                lastInsert = q:lastInsert(),
-                affectedRows = q:affectedRows()
+                lastInsert = self:lastInsert(),
+                affectedRows = self:affectedRows()
             }))
         end
-        query.onError = (q, err) =>
+        function query:onError(err)
             p:reject(err)
         end
+        query:start()
 
         return p
     end

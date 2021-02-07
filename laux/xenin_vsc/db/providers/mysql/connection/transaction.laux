@@ -1,0 +1,66 @@
+public class XeninVSC.MySQL.Transaction
+    private queries = {}
+    private map = {}
+
+    public constructor(conn)
+        self.conn = conn
+        self.trx = conn:createTransaction()
+    end
+
+    public query(str, hashId)
+        local query = XeninVSC.MySQL.Query(self.conn, str)
+        local id = table.insert(self.queries, query)
+        if (hashId) then
+            self.map[hashId] = id
+        end
+
+        return self.queries[id]
+    end
+
+    public prepare(str)
+        local query = XeninVSC.MySQL.PreparedQuery(self.conn, str)
+        local id = table.insert(self.queries, query)
+        if (hashId) then
+            self.map[hashId] = id
+        end
+
+        return self.queries[id]
+    end
+
+    public getData()
+        return self.data ?? {}
+    end
+
+    public getQueryData(id)
+        return self:getData()[self.map[id]]
+    end
+
+    public start()
+        local p = XeninUI.Promises.new()
+
+        for i, v in ipairs(self.queries) do
+            self.trx:addQuery(v:getRaw())
+        end
+
+        self.trx:start()
+        self.trx.onSuccess = (trx) =>
+            local queries = trx:getQueries()
+            local tbl = {}
+            for i, v in ipairs(queries) do
+                table.insert(tbl, XeninVSC.QueryResult({
+                    data = v.data,
+                    lastInsert = v:lastInsert(),
+                    affectedRows = v:affectedRows()
+                }))
+            end
+            self.data = tbl
+
+            p:resolve(self)
+        end
+        self.trx.onError = (err) =>
+            p:reject("Transaction failed:", err)
+        end
+
+        return p
+    end
+end

@@ -14,7 +14,6 @@ public class XeninVSC.MySQL.Connection
         self.db.onConnectionFailed = (db, err) =>
             p:reject({ connection = self, err = err })
         end
-
         self.db:connect()
         
         return p
@@ -25,14 +24,14 @@ public class XeninVSC.MySQL.Connection
     end
 
     public prepare(query)
-        return XeninVSC.MySQL.PreparedQuery(conn, query)
+        return XeninVSC.MySQL.PreparedQuery(self.db, query)
     end
 
     public query(query)
-        return XeninVSC.MySQL.Query(conn, query)
+        return XeninVSC.MySQL.Query(self.db, query)
     end
 
     public transaction(conn)
-        return XeninVSC.MySQL.Transaction(conn)
+        return XeninVSC.MySQL.Transaction(self.db)
     end
 end

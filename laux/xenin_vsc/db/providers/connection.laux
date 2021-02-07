@@ -18,3 +18,11 @@ end
 function XeninVSC:GetDatabaseConnection(id = "default")
     return self.Connections[id]
 end
+
+XeninVSC:ConnectToDatabase()
+    :next((conn) =>
+        print("Database has connected!")
+    end, (err) =>
+        print("Database failed to connect. Error:")
+        PrintTable(err)
+    end)

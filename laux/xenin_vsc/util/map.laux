@@ -3,7 +3,7 @@ function XeninVSC:Map(data, func)
     for i, v of data do
         local output = func(v, i)
         if (output) then
-            table.insertt(tbl, output)
+            table.insert(tbl, output)
         end
     end
 

@@ -1,0 +1,21 @@
+public class XeninVSC.SQLite.Connection
+    public connect()
+        return XeninUI.Promises.new():resolve()
+    end
+
+    public escape(value)
+        return sql.SQLStr(value)
+    end
+
+    public prepare(query)
+        return XeninVSC.SQLite.PreparedQuery(self, query)
+    end
+
+    public query(query)
+        return XeninVSC.SQLite.Query(self, query)
+    end
+
+    public transaction(conn)
+        return XeninVSC.SQLite.Transaction(self)
+    end
+end

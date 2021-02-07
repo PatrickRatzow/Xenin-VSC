@@ -1,7 +1,6 @@
 public class XeninVSC.MigrationManager
     public constructor(conn = XeninVSC:GetDatabaseConnection())
         self.conn = conn
-        self.running = false
     end
 
     public setMigrationsDirectory(dir)
@@ -17,19 +16,63 @@ public class XeninVSC.MigrationManager
     end
 
     public async run()
-        if (self.running) then throw "Already running" end
-        self.running = true
-        local files, folders = file.Find(self.dir)
+        local files, folders = file.Find(self.dir .. "/*.lua", "LUA")
+        local migrations = {}
         for i, v in ipairs(files) do
-            print(i, v)
+            migrations[#migrations + 1] = v
         end
-    
 
+        local missingMigrationTables = await self:createMissingMigrationTables()
+        local migrationsThatNeedToBeRun = await self:findMigrationsThatNeedToBeRun(migrations)
+        PrintTable(migrationsThatNeedToBeRun)
+        local trx = self.conn:transaction()
+        --self:createMissingMigrationTables(trx)
+        --trx = await trx:start()
+        -- do it
     end
 
-    private async isRunning()
+    private async findMigrationsThatNeedToBeRun(migrations)
+        local map = XeninVSC:Map(migrations, (mig) => return "?" end)
+        local questionMarks = table.concat(map, ", ")
+        local query = self.conn:prepare("SELECT * FROM xenin_vsc_migrations WHERE name IN (" .. questionMarks .. ")")
+        for i, v in ipairs(migrations) do
+            query:setString(i, v)
+        end
+        query = await query:start()
 
+        return query
     end
 
+    private runMigrations(trx, migrations)
+        trx:prepare([[
+
+        ]])
+    end
+
+    private async createMissingMigrationTables()
+        local result = self.conn:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_migrations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                script_name VARCHAR(255) NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                batch INT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                UNIQUE (script_name, name)
+            )
+        ]]):start()
+
+        return result
+    end
+
+    public static async migrationRun(ply)
+        local manager = await XeninVSC.MigrationManager()
+            :setMigrationsDirectory("xenin_vsc/db/providers/mysql/migrations")
+            :setAddonId("xenin_vsc")
+            :run()
+    end
 end
 
+local console = XeninVSC.Console
+console.commands = {}
+console:addCommand({ "migration", "run" }, XeninVSC.MigrationManager.migrationRun)

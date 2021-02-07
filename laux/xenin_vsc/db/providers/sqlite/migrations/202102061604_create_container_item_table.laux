@@ -1,0 +1,22 @@
+class Migration extends XeninVSC.Migration
+    public up(trx)
+        return trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_container_item (
+                item_id INT,
+                container_id INT,
+                slot INT UNSIGNED NOT NULL,
+                sort_order INT UNSIGNED,
+
+                PRIMARY KEY (item_id, container_id),
+                FOREIGN KEY (item_id) REFERENCES xenin_vsc_item (id),
+                FOREIGN KEY (container_id) REFERENCES xenin_vsc_container (id)
+            );
+        ]])
+    end
+
+    public down(trx)
+        return trx:query("DROP TABLE IF EXISTS xenin_vsc_container_item")
+    end
+end
+
+return Migration

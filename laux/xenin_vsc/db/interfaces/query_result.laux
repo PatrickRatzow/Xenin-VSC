@@ -5,7 +5,11 @@ public class XeninVSC.QueryResult
 
     public constructor(result = {})
         self.lastInsert = result.lastInsert
-        self.data = result.data
+        self.data = XeninVSC.QueryData(result.data)
         self.affectedRows = result.affectedRows
+    end
+
+    public isEmpty()
+        return self.data:isEmpty()
     end
 end

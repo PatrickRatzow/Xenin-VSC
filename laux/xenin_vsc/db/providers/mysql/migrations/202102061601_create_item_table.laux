@@ -1,0 +1,17 @@
+class Migration extends XeninVSC.Migration
+    public up(trx)
+        return trx:query([[
+            CREATE TABLE IF NOT EXISTS xenin_vsc_item (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+            );
+        ]])
+    end
+
+    public down(trx)
+        return trx:query("DROP TABLE IF EXISTS xenin_vsc_item")
+    end
+end
+
+return Migration
