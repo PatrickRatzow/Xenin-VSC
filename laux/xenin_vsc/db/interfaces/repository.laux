@@ -3,6 +3,14 @@ public class XeninVSC.Repository
         self.conn = conn
     end
 
+    public setConnection(conn)
+        self.conn = conn
+    end
+
+    public getConnection()
+        return self.conn
+    end
+
     public addDAO(...)
         local daos = { ... }
 
@@ -11,7 +19,7 @@ public class XeninVSC.Repository
             local lastPart = split[#split]
             local name = lastPart:sub(1, 1):lower() .. lastPart:sub(2)
 
-            self:buildDAO(name, dao)
+            self:buildDAO(name, v)
         end
     end
 
@@ -21,12 +29,12 @@ public class XeninVSC.Repository
     private buildDAO(name, dao)
         local inst = dao()
         if (inst.beforeBuild) then
-            inst:beforeBuild(self.conn, self)
+            inst:beforeBuild(self:getConnection(), self)
         end
-        inst.__conn = self.conn
-        inst.__repo = self
-        if (inst.afterBuild()) then
-            inst:afterBuild(dao.__conn, dao.__repo)
+        inst.conn = self:getConnection()
+        inst.repo = self
+        if (inst.afterBuild) then
+            inst:afterBuild(dao.conn, dao.repo)
         end
 
         self[name] = inst

@@ -3,12 +3,20 @@ XeninVSC.Repositories = {}
 function XeninVSC:CreateRepository(name)
     local type = self:GetDatabaseConfig().type
     local repo = XeninVSC[type][name .. "Repository"]
-    XeninVSC.Repositories[name] = repo
+    XeninVSC.Repositories[name] = { type = type, name = name .. "Repository" }
 end
 
 function XeninVSC:GetRepository(id)
-    return XeninVSC.Repositories[id](XeninVSC:GetDatabaseConnection())
+    local ref = XeninVSC.Repositories[id]
+    stopif !ref
+
+    local repo = XeninVSC[ref.type][ref.name]
+    repo:setConnection(XeninVSC:GetDatabaseConnection())
+    repo:setup()
+
+    return repo
 end
 
+XeninVSC:CreateRepository("Migration")
 XeninVSC:CreateRepository("User")
 XeninVSC:CreateRepository("Container")

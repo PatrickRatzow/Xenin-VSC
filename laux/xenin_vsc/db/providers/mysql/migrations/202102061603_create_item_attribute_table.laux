@@ -1,6 +1,6 @@
 class Migration extends XeninVSC.Migration
     public up(trx)
-        return trx:query([[
+        trx:query([[
             CREATE TABLE IF NOT EXISTS xenin_vsc_item_attribute (
                 item_id INT,
                 attribute VARCHAR(64),
@@ -13,7 +13,7 @@ class Migration extends XeninVSC.Migration
     end
 
     public down(trx)
-        return trx:query("DROP TABLE IF EXISTS xenin_vsc_item_attribute")
+        trx:query("DROP TABLE IF EXISTS xenin_vsc_item_attribute")
     end
 end
 

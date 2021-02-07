@@ -1,6 +1,7 @@
 public class XeninVSC.QueryData
     private data = data
-    public constructor(data = {}) end
+    private cursor = cursor
+    public constructor(data = {}, cursor = 0) end
 
     public getRow(id)
         return self.data[id]
@@ -12,5 +13,11 @@ public class XeninVSC.QueryData
 
     public isEmpty()
         return #self:getData() == 0
+    end
+
+    public getNext()
+        self.cursor++
+
+        return self:getData()[self.cursor];
     end
 end

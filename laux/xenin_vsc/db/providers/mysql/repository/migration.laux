@@ -1,0 +1,44 @@
+public class XeninVSC.MySQL.MigrationRepository extends XeninVSC.Repository
+    public setup()
+        self:addDAO(XeninVSC.MySQL.MigrationDAO)
+    end
+
+    public async createMigrationTables()
+        local tables = await self.migrationDAO:createMigrationTables()
+        
+        return tables
+    end
+
+    public async findMigrations(migrations)
+        local trx = self.conn:transaction()
+        for i, v in ipairs(migrations) do
+            self.migrationDAO:findMigration(trx, v:getName())
+        end
+        trx = await trx:start()
+
+        local tbl = {}
+        for i, v in ipairs(migrations) do
+            local name = v:getName()
+            local data = trx:getQueryData(name)
+            local empty = data:isEmpty()
+            
+            tbl[name] = !empty
+        end
+
+        return tbl
+    end
+
+    public async runMigrations(migrations)
+        local batchNumber = await self.migrationDAO:getBatchNumber()
+        local trx = self.conn:transaction()
+        local scriptName = "xenin_vsc"
+        for i, v in ipairs(migrations) do
+            v:up(trx)
+            self.migrationDAO:insertMigration(trx, v:getName(), scriptName, batchNumber)
+        end
+        trx = await trx:start()
+
+        return trx
+    end
+end
+

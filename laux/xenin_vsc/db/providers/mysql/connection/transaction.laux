@@ -1,6 +1,6 @@
 public class XeninVSC.MySQL.Transaction
-    private queries = {}
-    private map = {}
+    queries = {}
+    map = {}
 
     public constructor(conn)
         self.conn = conn
@@ -17,7 +17,7 @@ public class XeninVSC.MySQL.Transaction
         return self.queries[id]
     end
 
-    public prepare(str)
+    public prepare(str, hashId)
         local query = XeninVSC.MySQL.PreparedQuery(self.conn, str)
         local id = table.insert(self.queries, query)
         if (hashId) then
@@ -38,6 +38,8 @@ public class XeninVSC.MySQL.Transaction
     public start()
         local p = XeninUI.Promises.new()
 
+        if (#self.queries == 0) then return p:resolve() end
+        
         for i, v in ipairs(self.queries) do
             self.trx:addQuery(v:getRaw())
         end

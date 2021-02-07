@@ -13,6 +13,10 @@ public class XeninVSC.MySQL.PreparedQuery
         self.query:setString(id, value)
     end
 
+    public setNumber(id, value)
+        self.query:setNumber(id, value)
+    end
+
     public start()
         local p = XeninUI.Promises.new()
 

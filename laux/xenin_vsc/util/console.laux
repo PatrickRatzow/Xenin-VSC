@@ -23,6 +23,9 @@ class Console
 
             if (cmd) then
                 cmd.func(ply, cmd, args)
+            else
+                print("No command found")
+                
             end
         end, () =>
 
